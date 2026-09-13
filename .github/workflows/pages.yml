@@ -1,0 +1,40 @@
+# Lives in the PUBLIC site repository, not the game's. The game repo is
+# private and GitHub Free serves Pages from public repos only, so the store
+# site (support, privacy policy, licenses -- public content anyway) gets a
+# repo of its own. tools/publish_site.sh regenerates the pages, copies this
+# file in beside them as .github/workflows/pages.yml and pushes; it then
+# deploys on every push. `enablement: true` switches the repo's Pages
+# source to "GitHub Actions" on the first run, so nothing is clicked in
+# Settings. The site lives at https://<owner>.github.io/<repo>/.
+name: Store site
+
+on:
+  push:
+    branches: [main, master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/configure-pages@v5
+        with:
+          enablement: true
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: .
+      - id: deployment
+        uses: actions/deploy-pages@v4
