@@ -3,9 +3,11 @@
 # site (support, privacy policy, licenses -- public content anyway) gets a
 # repo of its own. tools/publish_site.sh regenerates the pages, copies this
 # file in beside them as .github/workflows/pages.yml and pushes; it then
-# deploys on every push. `enablement: true` switches the repo's Pages
-# source to "GitHub Actions" on the first run, so nothing is clicked in
-# Settings. The site lives at https://<owner>.github.io/<repo>/.
+# deploys on every push. The Pages site itself has to exist first: the
+# workflow's own token may not create it (`enablement: true` fails with
+# "Resource not accessible by integration"), so publish_site.sh creates it
+# once through the owner's `gh` session. The site lives at
+# https://<owner>.github.io/<repo>/.
 name: Store site
 
 on:
